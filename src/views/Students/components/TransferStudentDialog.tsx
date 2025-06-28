@@ -44,12 +44,15 @@ const TransferStudentDialog: React.FC<TransferStudentDialogProps> = ({
             return
         }
 
+        console.log(studentData)
+
         setLoading(true)
         try {
             await transferStudent({
                 studentId: studentData.id,
                 data: {
-                    group: selectedGroupId,
+                    group_from: studentData.group_ids[0],
+                    group_to: selectedGroupId,
                     joined_date: dayjs().format('YYYY-MM-DD')
                 }
             }).unwrap()
@@ -71,68 +74,76 @@ const TransferStudentDialog: React.FC<TransferStudentDialogProps> = ({
 
     return (
         <Dialog isOpen={isOpen} onClose={handleClose}>
-            <div className="flex flex-col p-6 max-w-md mx-auto">
+            {studentData.group_ids.length === 0 && (
                 <div className="flex items-center gap-2 mb-4">
                     <HiSwitchHorizontal size={24} className="text-blue-600" />
-                    <h2 className="text-xl font-semibold">Перевод студента</h2>
+                    <h2 className="text-xl font-semibold">Студент не состоиит ни в одной группе!</h2>
                 </div>
-                
-                <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-600">Студент:</p>
-                    <p className="font-medium">{studentData.full_name}</p>
-                    <p className="text-sm text-gray-600 mt-1">Текущие группы:</p>
-                    <p className="text-sm">{studentData.group_names?.join(', ') || 'Нет групп'}</p>
-                </div>
+            )}
+            {studentData.group_ids.length > 0 && (
+                <div className="flex flex-col p-6 max-w-md mx-auto">
+                    <div className="flex items-center gap-2 mb-4">
+                        <HiSwitchHorizontal size={24} className="text-blue-600" />
+                        <h2 className="text-xl font-semibold">Перевод студента</h2>
+                    </div>
 
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium mb-2">
-                            Новая группа *
-                        </label>
-                        <Select
-                            value={selectedGroupId || ''}
-                            onChange={(e) => setSelectedGroupId(Number(e.target.value))}
-                            disabled={groupsLoading || availableGroups.length === 0}
-                            sx={{ width: '100%', height: '44px' }}
-                            displayEmpty
-                        >
-                            <MenuItem value="" disabled>
-                                {groupsLoading ? 'Загрузка...' : 'Выберите группу'}
-                            </MenuItem>
-                            {availableGroups.map((group: groups) => (
-                                <MenuItem key={group.id} value={group.id}>
-                                    {group.name}
+                    <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                        <p className="text-sm text-gray-600">Студент:</p>
+                        <p className="font-medium">{studentData.full_name}</p>
+                        <p className="text-sm text-gray-600 mt-1">Текущие группы:</p>
+                        <p className="text-sm">{studentData.group_names?.join(', ') || 'Нет групп'}</p>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Новая группа *
+                            </label>
+                            <Select
+                                value={selectedGroupId || ''}
+                                onChange={(e) => setSelectedGroupId(Number(e.target.value))}
+                                disabled={groupsLoading || availableGroups.length === 0}
+                                sx={{ width: '100%', height: '44px' }}
+                                displayEmpty
+                            >
+                                <MenuItem value="" disabled>
+                                    {groupsLoading ? 'Загрузка...' : 'Выберите группу'}
                                 </MenuItem>
-                            ))}
-                        </Select>
-                        {availableGroups.length === 0 && !groupsLoading && (
-                            <FormHelperText>
-                                Нет доступных групп для перевода
-                            </FormHelperText>
-                        )}
-                    </div>
+                                {availableGroups.map((group: groups) => (
+                                    <MenuItem key={group.id} value={group.id}>
+                                        {group.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                            {availableGroups.length === 0 && !groupsLoading && (
+                                <FormHelperText>
+                                    Нет доступных групп для перевода
+                                </FormHelperText>
+                            )}
+                        </div>
 
-                    <div className="flex gap-3 pt-4">
-                        <Button
-                            variant="default"
-                            onClick={handleClose}
-                            disabled={loading}
-                            className="flex-1"
-                        >
-                            Отмена
-                        </Button>
-                        <Button
-                            variant="solid"
-                            onClick={onTransfer}
-                            loading={loading}
-                            disabled={loading || availableGroups.length === 0 || !selectedGroupId}
-                            className="flex-1 bg-green-600 hover:bg-green-700"
-                        >
-                            Перевести
-                        </Button>
+                        <div className="flex gap-3 pt-4">
+                            <Button
+                                variant="default"
+                                onClick={handleClose}
+                                disabled={loading}
+                                className="flex-1"
+                            >
+                                Отмена
+                            </Button>
+                            <Button
+                                variant="solid"
+                                onClick={onTransfer}
+                                loading={loading}
+                                disabled={loading || availableGroups.length === 0 || !selectedGroupId}
+                                className="flex-1 bg-green-600 hover:bg-green-700"
+                            >
+                                Перевести
+                            </Button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
         </Dialog>
     )
 }

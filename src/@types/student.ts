@@ -1,5 +1,6 @@
 import { Dayjs } from "dayjs"
 export type student = {
+    group_ids: number[]
     id: number
     full_name?: string
     gender?: string

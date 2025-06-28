@@ -114,7 +114,7 @@ function ExpendituresTable({
                                     ? 'ДОХОД'
                                     : 'РАСХОД'}
                             </Td>
-                            <Td>{payment.created_at.split('T')[0]}</Td>
+                            <Td>{payment.payment_date.split('T')[0]}</Td>
                             <Td>{formatNumber(payment.amount)}</Td>
                             <Td>{paymentMethods[payment.payment_method]}</Td>
                             <Td>

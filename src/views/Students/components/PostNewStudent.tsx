@@ -17,6 +17,8 @@ import { groups } from '@/@types/group'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs, { Dayjs } from 'dayjs'
+import { NotificationSuccess } from '@/helpers/NotificationSuccess'
+import { NotificationError } from '@/helpers/NotificationError'
 
 type student = {
     full_name: string
@@ -105,14 +107,21 @@ const PostNewStudent = ({
 
     const openNotification = (
         type: 'success' | 'warning' | 'danger' | 'info',
+        error: response | null
     ) => {
+        let valuesString = Object.entries(error?.data)
+            .map(([key, value]) => `${key}:${value}`)
+            .join(', ');
+        if (error.status === 500 ) {
+            valuesString = 'Internal Server Error';
+        }
         toast.push(
             <Notification
                 title={type.charAt(0).toUpperCase() + type.slice(1)}
                 type={type}
             >
                 {type === 'success' && 'Усепшно'}
-                {type === 'danger' && 'Ошибка'}
+                {type === 'danger' && <p>{valuesString}</p>}
             </Notification>,
         )
     }
@@ -149,12 +158,12 @@ const PostNewStudent = ({
             token,
         }).then((res: response) => {
             if (res.data) {
-                openNotification('success')
+                NotificationSuccess()
                 // refetch()
                 refetchGroups()
                 setDialogIsOpen(false)
             } else {
-                openNotification('danger')
+                NotificationError(res.error)
             }
         })
 

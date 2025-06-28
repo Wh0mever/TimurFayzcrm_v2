@@ -2,13 +2,14 @@ import Avatar from '@/components/ui/Avatar'
 import Dropdown from '@/components/ui/Dropdown'
 import withHeaderItem from '@/utils/hoc/withHeaderItem'
 import useAuth from '@/utils/hooks/useAuth'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import classNames from 'classnames'
 import { HiOutlineLogout, HiOutlineUser } from 'react-icons/hi'
 import type { CommonProps } from '@/@types/common'
 import { CgProfile } from "react-icons/cg";
 import rtkQueryService from "@/services/RtkQueryService";
 import { useAppSelector } from '@/store'
+import { useEffect } from 'react'
 
 type DropdownList = {
     label: string
@@ -33,9 +34,21 @@ const _UserDropdown = ({ className }: CommonProps) => {
             console.error("Error parsing JSON:", error);
         }
     }
-    const {data: user} = rtkQueryService.useGetCurrentUserQuery(token)
+    const {
+        data: user,
+        error,
+        isError,
+    } = rtkQueryService.useGetCurrentUserQuery(token)
 
     const { signOut } = useAuth()
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (isError && error && 'status' in error && error.status === 401) {
+            signOut()
+            navigate('/sign-in')
+        }
+    }, [isError, error, signOut, navigate])
 
     const {authority} = useAppSelector(
         (state) => state.auth.user

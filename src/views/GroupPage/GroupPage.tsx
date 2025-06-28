@@ -19,7 +19,7 @@ const GroupPage = () => {
         }
     }
 
-    const [sorting, setSorting] = useState<string>();
+    const [sorting, setSorting] = useState<string>('full_name');
 
     const {groupId} = useParams()
     const { data: groupData} = rtkQueryService.useGetGroupDetailsQuery({token, id: groupId})

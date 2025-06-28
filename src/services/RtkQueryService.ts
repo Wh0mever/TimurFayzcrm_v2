@@ -4,7 +4,7 @@ const RtkQueryService = createApi({
     reducerPath: 'rtkApi',
     tagTypes: ["Students"],
     baseQuery: fetchBaseQuery({
-        baseUrl: 'https://api.timur-fayz.uz',
+        baseUrl: import.meta.env.VITE_API_URL,
         prepareHeaders: (headers) => {
             const adminData = localStorage.getItem('admin')
             if (adminData) {
@@ -43,9 +43,16 @@ const RtkQueryService = createApi({
             }),
             providesTags: ['Students'],
         }),
+        getStudentById: builder.query({
+            query: (id) => ({
+                url: `/api/students/${id}/`,
+                method: 'GET',
+            }),
+            providesTags: ['Students'],
+        }),
         getFilteredStudents: builder.query({
             query: ({ params, sortings, page }) => ({
-                url: `/api/students/?ordering=${sortings}&page=${page}`,
+                url: page ? `/api/students/?ordering=${sortings}&page=${page}` : `/api/students/?ordering=${sortings}`,
                 method: 'GET',
                 params: params !== '' ? params : null,
             }),
@@ -80,8 +87,8 @@ const RtkQueryService = createApi({
         }),
         transferStudent: builder.mutation({
             query: ({ studentId, data }) => ({
-                url: `/api/students/${studentId}/`,
-                method: 'PUT',
+                url: `/api/students/${studentId}/transfer-to-group/`,
+                method: 'POST',
                 body: data,
             }),
             invalidatesTags: ['Students'],
