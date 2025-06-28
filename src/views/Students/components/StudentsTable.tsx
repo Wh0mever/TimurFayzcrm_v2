@@ -430,6 +430,16 @@ const StudentsTable: React.FC<StudentsTable> = ({
                                             size={20}
                                             color={'gray'}
                                         />
+                                        <HiSwitchHorizontal
+                                            onClick={() => {
+                                                setTransferIsOpen(true)
+                                                setCurrentStd(student)
+                                            }}
+                                            className={'cursor-pointer'}
+                                            size={20}
+                                            color={'gray'}
+                                            title="Перевести в другую группу"
+                                        />
                                     </div>
                                 </Td>
                             )}
